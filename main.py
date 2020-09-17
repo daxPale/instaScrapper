@@ -1,11 +1,14 @@
 from selenium import webdriver
 from getpass import getpass
 import time
-
+import urllib.request as urllib
+import os
+webdriver_path = "./geckodriver"
+download_url = "media?size=l"
 username = input("Username: ")
 password= getpass()
 url = input("URL: ")
-browser = webdriver.Firefox(executable_path='/home/caner/geckodriver')
+browser = webdriver.Firefox(executable_path=webdriver_path)
 browser.get(url)
 time.sleep(5)
 
@@ -19,8 +22,9 @@ login.click()
 time.sleep(5)
 notNow = browser.find_element_by_xpath("/html/body/div[1]/section/main/div/div/div/div/button")
 notNow.click()
+time.sleep(5)
 
-SCROLL_PAUSE_TIME = 1
+SCROLL_PAUSE_TIME = 1.5
 
 last_height = browser.execute_script("return document.body.scrollHeight")
 
@@ -36,11 +40,14 @@ while True:
 
 posts = []
 links = browser.find_elements_by_tag_name('a')
-
 for link in links:
     post = link.get_attribute('href')
-    if '/p/' in posts:
+    if '/p/' in post:
+        post += download_url
         posts.append(post)
-
-
-        
+i=0
+for post in posts:
+    dir=os.path.abspath('./pictures')  
+    work_path=os.path.join(dir,'{}.jpg'.format(i))
+    urllib.urlretrieve(post,work_path)
+    i+=1
